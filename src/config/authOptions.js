@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 import { User } from "@/app/models/User";
 
 const authOptions = {
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
