@@ -11,7 +11,6 @@ export default function OrderPage() {
   const [order, setOrder] = useState();
   const [loadingOrder, setLoadingOrder] = useState(true);
   const {id} = useParams();
-  
   useEffect(() => {
     if (typeof window.console !== "undefined") {
       if (window.location.href.includes('clear-cart=1')) {
@@ -20,14 +19,29 @@ export default function OrderPage() {
     }
     if (id) {
       setLoadingOrder(true);
-      fetch('/api/orders?_id='+id).then(res => {
-        res.json().then(orderData => {
-          setOrder(orderData);
-          setLoadingOrder(false);
-        });
+      fetch('/api/orders?_id=' + id)
+      .then(res => {
+
+       if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.text(); // Get raw text first to check what is being returned
       })
-    }
-  }, []);
+      .then(text => {
+        try {
+          const orderData = JSON.parse(text); // Manually parse JSON
+          setOrder(orderData);
+        } catch (error) {
+          console.error('Failed to parse JSON:', error);
+        }
+        setLoadingOrder(false);
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+        setLoadingOrder(false);
+      });
+  }
+}, [id, clearCart]);
 
   let subtotal = 0;
   if (order?.cartProducts) {

@@ -1,28 +1,43 @@
-import {authOptions, isAdmin} from "@/app/api/auth/[...nextauth]/route";
+import { authOptions, isAdmin } from "@/app/api/auth/[...nextauth]/route";
 import { Order } from "@/app/models/Order";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth/next";
 
 export async function GET(req) {
-  mongoose.connect(process.env.MONGO_URL);
+  try {
+    // Connect to the database
+    await mongoose.connect(process.env.MONGO_URL);
 
-  const session = await getServerSession(authOptions);
-  const userEmail = session?.user?.email;
-  const admin = await isAdmin();
+    // Get the session
+    const session = await getServerSession(authOptions);
+    const userEmail = session?.user?.email;
+    const admin = await isAdmin();
 
-  const url = new URL(req.url);
-  const _id = url.searchParams.get('_id');
-  if (_id) {
-    return Response.json( await Order.findById(_id) );
+    // Parse URL parameters
+    const url = new URL(req.url);
+    const _id = url.searchParams.get('_id');
+
+    if (_id) {
+      const order = await Order.findById(_id);
+      if (!order) {
+        return new Response(JSON.stringify({ error: "Order not found" }), { status: 404 });
+      }
+      return new Response(JSON.stringify(order), { status: 200 });
+    }
+
+    if (admin) {
+      const orders = await Order.find();
+      return new Response(JSON.stringify(orders), { status: 200 });
+    }
+
+    if (userEmail) {
+      const orders = await Order.find({ userEmail });
+      return new Response(JSON.stringify(orders), { status: 200 });
+    }
+
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
   }
-
-
-  if (admin) {
-    return Response.json( await Order.find() );
-  }
-
-  if (userEmail) {
-    return Response.json( await Order.find({userEmail}) );
-  }
-
 }
