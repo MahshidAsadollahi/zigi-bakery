@@ -24,14 +24,16 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "typeRoots": ["./types", "./node_modules/@types"]  // Add this line
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "src/app/api/auth/[...nextauth]/route.js"  ],
+    "**/*.tsx",
+    "src/app/api/auth/[...nextauth]/route.js"
+  ],
   "exclude": [
     "node_modules"
   ]
