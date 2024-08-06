@@ -40,5 +40,6 @@ export async function GET(req) {
   } catch (error) {
     console.error("Error fetching orders:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+    
   }
 }
