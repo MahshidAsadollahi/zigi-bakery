@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images:{
-        remotePatterns:[
-            {
+    images: {
+      remotePatterns: [
+        {
                 protocol:'https',
                 hostname:'**.googleusercontent.com',
 
@@ -12,10 +12,8 @@ const nextConfig = {
                 hostname:'zigi-bakery.s3.amazonaws.com',
 
             },
-
         ],
-    },
-};
-
-export default nextConfig;
-
+      },
+    };
+    
+    module.exports = nextConfig;
