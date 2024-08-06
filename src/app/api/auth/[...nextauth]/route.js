@@ -10,7 +10,7 @@ import * as mongoose from "mongoose";
 import { User } from "@/app/models/User";
 
 // Define NextAuth options
-const authOptions = {
+ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   adapter: MongoDBAdapter(clientPromise),
   providers: [
