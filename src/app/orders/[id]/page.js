@@ -19,29 +19,15 @@ export default function OrderPage() {
     }
     if (id) {
       setLoadingOrder(true);
-      fetch('/api/orders?_id=' + id)
-      .then(res => {
-
-       if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.text(); // Get raw text first to check what is being returned
-      })
-      .then(text => {
-        try {
-          const orderData = JSON.parse(text); // Manually parse JSON
+      fetch('/api/orders?_id='+id).then(res => {
+        res.json().then(orderData => {
           setOrder(orderData);
-        } catch (error) {
-          console.error('Failed to parse JSON:', error);
-        }
-        setLoadingOrder(false);
+          setLoadingOrder(false);
+        });
       })
-      .catch(error => {
-        console.error('Fetch error:', error);
-        setLoadingOrder(false);
-      });
-  }
-}, [id, clearCart]);
+    }
+  }, []);
+
 
   let subtotal = 0;
   if (order?.cartProducts) {
@@ -65,8 +51,8 @@ export default function OrderPage() {
       {order && (
         <div className="grid md:grid-cols-2 md:gap-16">
           <div>
-            {order.cartProducts.map((product, index) => (
-              <CartProduct key={`${product._id}-${index}`} product={product} />
+          {order.cartProducts.map(product => (
+              <CartProduct key={product._id} product={product} />
             ))}
             <div className="text-right py-2 text-gray-500">
               Subtotal:
